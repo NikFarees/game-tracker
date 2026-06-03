@@ -80,23 +80,32 @@ class DatabaseHelper {
       CREATE TABLE profile (
         id INTEGER PRIMARY KEY,
         name TEXT,
-        username TEXT,
         email TEXT,
         phone TEXT,
         genre TEXT
       )
     ''');
 
-    // Seed one profile row. The username shown comes from login,
-    // the rest of these fields are the defaults.
+    // Seed the single profile row. The displayed username comes from login,
+    // so it is not stored here; only these details are.
     await db.insert('profile', {
       'id': 1,
-      'name': 'Alex Carter',
-      'username': 'player',
-      'email': 'alex.carter@gamelog.app',
-      'phone': '+1 555 0142',
-      'genre': 'Action RPG',
+      'name': 'Muhammad Haziq',
+      'email': 'haziq.azman@gamelog.app',
+      'phone': '+60 12-345 6789',
+      'genre': 'MOBA',
     });
+
+    // Seed a few games so the list isn't empty on a fresh install.
+    const seedGames = [
+      {'title': 'Mobile Legends: Bang Bang', 'platform': 'Mobile', 'hours': 540, 'status': 'Playing'},
+      {'title': 'Genshin Impact', 'platform': 'Mobile', 'hours': 213, 'status': 'Playing'},
+      {'title': "Marvel's Spider-Man", 'platform': 'PS5', 'hours': 32, 'status': 'Completed'},
+      {'title': 'Grand Theft Auto V', 'platform': 'PC', 'hours': 88, 'status': 'Playing'},
+    ];
+    for (final g in seedGames) {
+      await db.insert('games', g);
+    }
   }
 
   Future<void> _createUsers(Database db) async {
