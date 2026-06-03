@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
+import 'all_games.dart';
 import 'database_helper.dart';
 import 'form_page.dart';
+import 'game_list.dart';
 
 class HomePage extends StatefulWidget {
   final String username;
@@ -38,32 +40,21 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  // Open the form to add a new game, or edit an existing one. Reload on return.
-  Future<void> _openForm({Game? game}) async {
+  // Open the form to add a new game. Reload on return.
+  Future<void> _openForm() async {
     final saved = await Navigator.push<bool>(
       context,
-      MaterialPageRoute(builder: (_) => FormPage(existing: game)),
+      MaterialPageRoute(builder: (_) => const FormPage()),
     );
     if (saved == true) _load();
   }
 
-  Future<bool> _confirmDelete(Game game) async {
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Delete game?'),
-        content: Text('Remove "${game.title}" from your library?'),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Delete')),
-        ],
-      ),
+  // Show the full library, then reload in case anything changed there.
+  Future<void> _openAllGames() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const AllGamesPage()),
     );
-    return ok ?? false;
-  }
-
-  Future<void> _delete(Game game) async {
-    await _db.deleteGame(game.id!);
     _load();
   }
 
@@ -110,7 +101,7 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(width: 12),
               Expanded(
                 child: OutlinedButton.icon(
-                  onPressed: _load,
+                  onPressed: _openAllGames,
                   icon: const Icon(Icons.list_alt),
                   label: const Text('View All'),
                 ),
@@ -122,7 +113,12 @@ class _HomePageState extends State<HomePage> {
           const Text('Recent Games', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
 
-          Expanded(child: _recentList()),
+          Expanded(
+            child: GameList(
+              games: _games.take(5).toList(),
+              onChanged: _load,
+            ),
+          ),
         ],
       ),
     );
@@ -146,55 +142,6 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _recentList() {
-    if (_games.isEmpty) {
-      return Center(
-        child: Text(
-          'No games yet. Tap "Add Game" to start.',
-          style: TextStyle(color: Colors.grey[500]),
-        ),
-      );
-    }
-
-    return ListView.builder(
-      itemCount: _games.length,
-      itemBuilder: (context, i) {
-        final game = _games[i];
-        // Swipe to delete, tap to edit, long-press also deletes.
-        return Dismissible(
-          key: ValueKey(game.id),
-          direction: DismissDirection.endToStart,
-          confirmDismiss: (_) => _confirmDelete(game),
-          onDismissed: (_) => _delete(game),
-          background: Container(
-            alignment: Alignment.centerRight,
-            padding: const EdgeInsets.only(right: 24),
-            decoration: BoxDecoration(
-              color: Colors.red.shade400,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: const Icon(Icons.delete, color: Colors.white),
-          ),
-          child: Card(
-            child: ListTile(
-              leading: CircleAvatar(
-                backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
-                child: Icon(Icons.videogame_asset, color: Theme.of(context).colorScheme.primary),
-              ),
-              title: Text(game.title),
-              subtitle: Text('${game.platform} · ${game.status}'),
-              trailing: Text('${game.hours}h', style: TextStyle(color: Colors.grey[400])),
-              onTap: () => _openForm(game: game),
-              onLongPress: () async {
-                if (await _confirmDelete(game)) _delete(game);
-              },
-            ),
-          ),
-        );
-      },
     );
   }
 }
