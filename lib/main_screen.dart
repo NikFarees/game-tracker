@@ -6,7 +6,6 @@ import 'login.dart';
 import 'media.dart';
 import 'profile.dart';
 
-/// Shell that holds the four tabs plus the navigation drawer.
 class MainScreen extends StatefulWidget {
   final String username;
   const MainScreen({super.key, required this.username});
@@ -20,7 +19,6 @@ class _MainScreenState extends State<MainScreen> {
 
   static const _titles = ['Home', 'Media', 'Profile', 'Add Game'];
 
-  // Built fresh each time the tab changes, so returning to Home re-reads the db.
   Widget _pageFor(int i) {
     switch (i) {
       case 0:
@@ -75,7 +73,7 @@ class _MainScreenState extends State<MainScreen> {
           selected: _index == i,
           selectedColor: accent,
           onTap: () {
-            Navigator.pop(context); // close the drawer first
+            Navigator.pop(context);
             _select(i);
           },
         );

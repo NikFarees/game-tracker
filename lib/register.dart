@@ -61,7 +61,7 @@ class _RegisterPageState extends State<RegisterPage> {
     );
     if (!mounted) return;
 
-    _showSnack('Account created — please log in');
+    _showSnack('Account created, please log in');
     Navigator.pop(context);
   }
 

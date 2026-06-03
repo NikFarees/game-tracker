@@ -40,7 +40,6 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  // Open the form to add a new game. Reload on return.
   Future<void> _openForm() async {
     final saved = await Navigator.push<bool>(
       context,
@@ -49,7 +48,6 @@ class _HomePageState extends State<HomePage> {
     if (saved == true) _load();
   }
 
-  // Show the full library, then reload in case anything changed there.
   Future<void> _openAllGames() async {
     await Navigator.push(
       context,
@@ -69,7 +67,6 @@ class _HomePageState extends State<HomePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Greeting
           Text(
             'Welcome back, ${widget.username}!',
             style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
@@ -78,7 +75,6 @@ class _HomePageState extends State<HomePage> {
           Text('Here is your library at a glance.', style: TextStyle(color: Colors.grey[500])),
           const SizedBox(height: 16),
 
-          // Stat cards
           Row(
             children: [
               _statCard('Total Games', '$_total', Icons.videogame_asset_outlined),
@@ -88,7 +84,6 @@ class _HomePageState extends State<HomePage> {
           ),
           const SizedBox(height: 16),
 
-          // Quick actions
           Row(
             children: [
               Expanded(

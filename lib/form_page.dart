@@ -2,11 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'database_helper.dart';
 
-/// Add or edit a game.
-///
-/// [existing] non-null means edit mode (fields pre-filled).
-/// [isEmbedded] true means it lives inside a tab, so it has no Scaffold of its
-/// own and stays put after saving instead of popping.
 class FormPage extends StatefulWidget {
   final Game? existing;
   final bool isEmbedded;
@@ -93,7 +88,7 @@ class _FormPageState extends State<FormPage> {
     if (widget.isEmbedded) {
       _clear();
     } else {
-      Navigator.pop(context, true); // tell the caller to refresh
+      Navigator.pop(context, true);
     }
   }
 

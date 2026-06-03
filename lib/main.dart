@@ -20,7 +20,6 @@ class GameLogApp extends StatelessWidget {
   }
 }
 
-// Dark theme with a purple accent. Most pages read their colors from here.
 ThemeData _buildTheme() {
   final scheme = ColorScheme.fromSeed(
     seedColor: const Color(0xFFBB86FC),

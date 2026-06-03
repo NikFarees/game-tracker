@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// Static "Gaming News & Tips" feed.
 class MediaPage extends StatelessWidget {
   const MediaPage({super.key});
 

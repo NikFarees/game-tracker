@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'database_helper.dart';
 import 'game_list.dart';
 
-/// The full library — every tracked game. Pushed from Home's "View All" button.
 class AllGamesPage extends StatefulWidget {
   const AllGamesPage({super.key});
 

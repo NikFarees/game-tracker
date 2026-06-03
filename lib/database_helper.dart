@@ -4,7 +4,6 @@ import 'package:crypto/crypto.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
-/// A single tracked game.
 class Game {
   final int? id;
   final String title;
@@ -27,7 +26,6 @@ class Game {
       'hours': hours,
       'status': status,
     };
-    // Leave id out on insert so SQLite assigns it.
     if (id != null) map['id'] = id;
     return map;
   }
@@ -41,7 +39,6 @@ class Game {
       );
 }
 
-/// Wraps the SQLite database. One shared instance for the whole app.
 class DatabaseHelper {
   DatabaseHelper._();
   static final DatabaseHelper instance = DatabaseHelper._();
@@ -92,10 +89,6 @@ class DatabaseHelper {
     ''');
   }
 
-  // Account details now live on the users table and the old seeded profile
-  // table is gone. This app is local-only and never shipped a stable schema,
-  // so rather than migrate row by row we just rebuild the users table while
-  // leaving the games list untouched.
   Future<void> _upgrade(Database db, int oldVersion, int newVersion) async {
     if (oldVersion < 4) {
       await db.execute('DROP TABLE IF EXISTS profile');
@@ -103,8 +96,6 @@ class DatabaseHelper {
       await _createUsers(db);
     }
   }
-
-  // Games CRUD.
 
   Future<int> insertGame(Game game) async {
     final db = await database;
@@ -127,8 +118,6 @@ class DatabaseHelper {
     return db.delete('games', where: 'id = ?', whereArgs: [id]);
   }
 
-  // Counts used by the home stat cards.
-
   Future<int> getTotalCount() async {
     final db = await database;
     final res = await db.rawQuery('SELECT COUNT(*) AS c FROM games');
@@ -143,8 +132,6 @@ class DatabaseHelper {
     );
     return Sqflite.firstIntValue(res) ?? 0;
   }
-
-  // Accounts. Passwords are stored as a SHA-256 hex digest, never plain text.
 
   String _hash(String password) =>
       sha256.convert(utf8.encode(password)).toString();
@@ -181,8 +168,6 @@ class DatabaseHelper {
     });
   }
 
-  /// The stored details (name, email, …) for a registered user, or an empty
-  /// map if there's no such account. The profile screen reads from this.
   Future<Map<String, dynamic>> getUser(String username) async {
     final db = await database;
     final rows = await db.query(

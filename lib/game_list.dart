@@ -3,10 +3,6 @@ import 'package:flutter/material.dart';
 import 'database_helper.dart';
 import 'form_page.dart';
 
-/// The scrollable list of game cards shared by the Home tab and the full
-/// "All Games" screen. Tap a card to edit, or tap the trash icon to delete
-/// (after a confirmation). [onChanged] runs after an edit or delete so the
-/// parent can reload its data.
 class GameList extends StatelessWidget {
   final List<Game> games;
   final Future<void> Function() onChanged;
