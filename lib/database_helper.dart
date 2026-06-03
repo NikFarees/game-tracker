@@ -57,7 +57,7 @@ class DatabaseHelper {
     final path = join(await getDatabasesPath(), 'gamelog.db');
     return openDatabase(
       path,
-      version: 2,
+      version: 3,
       onCreate: _create,
       onUpgrade: _upgrade,
     );
@@ -75,37 +75,6 @@ class DatabaseHelper {
     ''');
 
     await _createUsers(db);
-
-    await db.execute('''
-      CREATE TABLE profile (
-        id INTEGER PRIMARY KEY,
-        name TEXT,
-        email TEXT,
-        phone TEXT,
-        genre TEXT
-      )
-    ''');
-
-    // Seed the single profile row. The displayed username comes from login,
-    // so it is not stored here; only these details are.
-    await db.insert('profile', {
-      'id': 1,
-      'name': 'Muhammad Haziq',
-      'email': 'haziq.azman@gamelog.app',
-      'phone': '+60 12-345 6789',
-      'genre': 'MOBA',
-    });
-
-    // Seed a few games so the list isn't empty on a fresh install.
-    const seedGames = [
-      {'title': 'Mobile Legends: Bang Bang', 'platform': 'Mobile', 'hours': 540, 'status': 'Playing'},
-      {'title': 'Genshin Impact', 'platform': 'Mobile', 'hours': 213, 'status': 'Playing'},
-      {'title': "Marvel's Spider-Man", 'platform': 'PS5', 'hours': 32, 'status': 'Completed'},
-      {'title': 'Grand Theft Auto V', 'platform': 'PC', 'hours': 88, 'status': 'Playing'},
-    ];
-    for (final g in seedGames) {
-      await db.insert('games', g);
-    }
   }
 
   Future<void> _createUsers(Database db) async {
@@ -113,15 +82,21 @@ class DatabaseHelper {
       CREATE TABLE users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT NOT NULL UNIQUE,
-        password TEXT NOT NULL
+        password TEXT NOT NULL,
+        name TEXT NOT NULL,
+        email TEXT NOT NULL
       )
     ''');
   }
 
-  // The users table was added in v2, so existing installs get it here
-  // without dropping their games or profile.
+  // Account details now live on the users table and the old seeded profile
+  // table is gone. This app is local-only and never shipped a stable schema,
+  // so rather than migrate row by row we just rebuild the users table while
+  // leaving the games list untouched.
   Future<void> _upgrade(Database db, int oldVersion, int newVersion) async {
-    if (oldVersion < 2) {
+    if (oldVersion < 3) {
+      await db.execute('DROP TABLE IF EXISTS profile');
+      await db.execute('DROP TABLE IF EXISTS users');
       await _createUsers(db);
     }
   }
@@ -166,12 +141,6 @@ class DatabaseHelper {
     return Sqflite.firstIntValue(res) ?? 0;
   }
 
-  Future<Map<String, dynamic>> getProfile() async {
-    final db = await database;
-    final rows = await db.query('profile', where: 'id = ?', whereArgs: [1], limit: 1);
-    return rows.isNotEmpty ? rows.first : <String, dynamic>{};
-  }
-
   // Accounts. Passwords are stored as a SHA-256 hex digest, never plain text.
 
   String _hash(String password) =>
@@ -188,12 +157,32 @@ class DatabaseHelper {
     return rows.isNotEmpty;
   }
 
-  Future<void> registerUser(String username, String password) async {
+  Future<void> registerUser({
+    required String username,
+    required String password,
+    required String name,
+    required String email,
+  }) async {
     final db = await database;
     await db.insert('users', {
       'username': username,
       'password': _hash(password),
+      'name': name,
+      'email': email,
     });
+  }
+
+  /// The stored details (name, email, …) for a registered user, or an empty
+  /// map if there's no such account. The profile screen reads from this.
+  Future<Map<String, dynamic>> getUser(String username) async {
+    final db = await database;
+    final rows = await db.query(
+      'users',
+      where: 'username = ?',
+      whereArgs: [username],
+      limit: 1,
+    );
+    return rows.isNotEmpty ? rows.first : <String, dynamic>{};
   }
 
   Future<bool> checkLogin(String username, String password) async {

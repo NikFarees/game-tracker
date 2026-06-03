@@ -14,7 +14,7 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   final _db = DatabaseHelper.instance;
 
-  Map<String, dynamic> _profile = {};
+  Map<String, dynamic> _user = {};
   bool _loading = true;
 
   @override
@@ -24,10 +24,10 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _load() async {
-    final p = await _db.getProfile();
+    final u = await _db.getUser(widget.username);
     if (!mounted) return;
     setState(() {
-      _profile = p;
+      _user = u;
       _loading = false;
     });
   }
@@ -46,7 +46,7 @@ class _ProfilePageState extends State<ProfilePage> {
     }
 
     final accent = Theme.of(context).colorScheme.primary;
-    final name = (_profile['name'] as String?) ?? 'Player';
+    final name = (_user['name'] as String?) ?? 'Player';
 
     return ListView(
       padding: const EdgeInsets.all(20),
@@ -70,9 +70,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
         _infoTile(Icons.badge_outlined, 'Name', name),
         _infoTile(Icons.person_outline, 'Username', widget.username),
-        _infoTile(Icons.email_outlined, 'Email', (_profile['email'] as String?) ?? '-'),
-        _infoTile(Icons.phone_outlined, 'Phone', (_profile['phone'] as String?) ?? '-'),
-        _infoTile(Icons.favorite_outline, 'Favourite Genre', (_profile['genre'] as String?) ?? '-'),
+        _infoTile(Icons.email_outlined, 'Email', (_user['email'] as String?) ?? '-'),
 
         const SizedBox(height: 28),
         ElevatedButton.icon(

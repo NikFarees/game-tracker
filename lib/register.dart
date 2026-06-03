@@ -11,6 +11,8 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
+  final _nameCtrl = TextEditingController();
+  final _emailCtrl = TextEditingController();
   final _userCtrl = TextEditingController();
   final _passCtrl = TextEditingController();
   final _confirmCtrl = TextEditingController();
@@ -19,6 +21,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   void dispose() {
+    _nameCtrl.dispose();
+    _emailCtrl.dispose();
     _userCtrl.dispose();
     _passCtrl.dispose();
     _confirmCtrl.dispose();
@@ -40,7 +44,12 @@ class _RegisterPageState extends State<RegisterPage> {
       return;
     }
 
-    await DatabaseHelper.instance.registerUser(username, _passCtrl.text);
+    await DatabaseHelper.instance.registerUser(
+      username: username,
+      password: _passCtrl.text,
+      name: _nameCtrl.text.trim(),
+      email: _emailCtrl.text.trim(),
+    );
     if (!mounted) return;
 
     _showSnack('Account created — please log in');
@@ -73,6 +82,34 @@ class _RegisterPageState extends State<RegisterPage> {
                     style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 36),
+                  TextFormField(
+                    controller: _nameCtrl,
+                    textCapitalization: TextCapitalization.words,
+                    decoration: const InputDecoration(
+                      labelText: 'Name',
+                      prefixIcon: Icon(Icons.badge_outlined),
+                    ),
+                    validator: (v) =>
+                        (v == null || v.trim().isEmpty) ? 'Enter your name' : null,
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _emailCtrl,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: const InputDecoration(
+                      labelText: 'Email',
+                      prefixIcon: Icon(Icons.email_outlined),
+                    ),
+                    validator: (v) {
+                      final value = v?.trim() ?? '';
+                      if (value.isEmpty) return 'Enter your email';
+                      if (!value.contains('@') || !value.contains('.')) {
+                        return 'Enter a valid email';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
                   TextFormField(
                     controller: _userCtrl,
                     decoration: const InputDecoration(
