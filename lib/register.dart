@@ -1,25 +1,27 @@
 import 'package:flutter/material.dart';
 
 import 'database_helper.dart';
-import 'main_screen.dart';
-import 'register.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
   final _userCtrl = TextEditingController();
   final _passCtrl = TextEditingController();
+  final _confirmCtrl = TextEditingController();
+
+  bool _saving = false;
 
   @override
   void dispose() {
     _userCtrl.dispose();
     _passCtrl.dispose();
+    _confirmCtrl.dispose();
     super.dispose();
   }
 
@@ -27,27 +29,26 @@ class _LoginPageState extends State<LoginPage> {
     if (!_formKey.currentState!.validate()) return;
 
     final username = _userCtrl.text.trim();
-    final ok = await DatabaseHelper.instance.checkLogin(username, _passCtrl.text);
+    setState(() => _saving = true);
+
+    final taken = await DatabaseHelper.instance.usernameExists(username);
     if (!mounted) return;
 
-    if (!ok) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Wrong username or password')),
-      );
+    if (taken) {
+      setState(() => _saving = false);
+      _showSnack('That username is already taken');
       return;
     }
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => MainScreen(username: username)),
-    );
+    await DatabaseHelper.instance.registerUser(username, _passCtrl.text);
+    if (!mounted) return;
+
+    _showSnack('Account created — please log in');
+    Navigator.pop(context);
   }
 
-  void _openRegister() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const RegisterPage()),
-    );
+  void _showSnack(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -55,6 +56,7 @@ class _LoginPageState extends State<LoginPage> {
     final accent = Theme.of(context).colorScheme.primary;
 
     return Scaffold(
+      appBar: AppBar(title: const Text('Create account')),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -67,11 +69,9 @@ class _LoginPageState extends State<LoginPage> {
                   Icon(Icons.sports_esports, size: 72, color: accent),
                   const SizedBox(height: 12),
                   const Text(
-                    'GameLog',
-                    style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+                    'Join GameLog',
+                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                   ),
-                  const SizedBox(height: 4),
-                  Text('Track what you play', style: TextStyle(color: Colors.grey[500])),
                   const SizedBox(height: 36),
                   TextFormField(
                     controller: _userCtrl,
@@ -80,7 +80,7 @@ class _LoginPageState extends State<LoginPage> {
                       prefixIcon: Icon(Icons.person_outline),
                     ),
                     validator: (v) =>
-                        (v == null || v.trim().isEmpty) ? 'Enter your username' : null,
+                        (v == null || v.trim().isEmpty) ? 'Choose a username' : null,
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
@@ -91,20 +91,32 @@ class _LoginPageState extends State<LoginPage> {
                       prefixIcon: Icon(Icons.lock_outline),
                     ),
                     validator: (v) =>
-                        (v == null || v.isEmpty) ? 'Enter your password' : null,
+                        (v == null || v.isEmpty) ? 'Choose a password' : null,
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _confirmCtrl,
+                    obscureText: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Confirm password',
+                      prefixIcon: Icon(Icons.lock_outline),
+                    ),
+                    validator: (v) =>
+                        v != _passCtrl.text ? 'Passwords do not match' : null,
                   ),
                   const SizedBox(height: 28),
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: _submit,
-                      child: const Text('Log In'),
+                      onPressed: _saving ? null : _submit,
+                      child: _saving
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Text('Create Account'),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  TextButton(
-                    onPressed: _openRegister,
-                    child: const Text("Don't have an account? Register"),
                   ),
                 ],
               ),

@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:crypto/crypto.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -52,7 +55,12 @@ class DatabaseHelper {
 
   Future<Database> _open() async {
     final path = join(await getDatabasesPath(), 'gamelog.db');
-    return openDatabase(path, version: 1, onCreate: _create);
+    return openDatabase(
+      path,
+      version: 2,
+      onCreate: _create,
+      onUpgrade: _upgrade,
+    );
   }
 
   Future<void> _create(Database db, int version) async {
@@ -65,6 +73,8 @@ class DatabaseHelper {
         status TEXT NOT NULL
       )
     ''');
+
+    await _createUsers(db);
 
     await db.execute('''
       CREATE TABLE profile (
@@ -87,6 +97,24 @@ class DatabaseHelper {
       'phone': '+1 555 0142',
       'genre': 'Action RPG',
     });
+  }
+
+  Future<void> _createUsers(Database db) async {
+    await db.execute('''
+      CREATE TABLE users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT NOT NULL UNIQUE,
+        password TEXT NOT NULL
+      )
+    ''');
+  }
+
+  // The users table was added in v2, so existing installs get it here
+  // without dropping their games or profile.
+  Future<void> _upgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await _createUsers(db);
+    }
   }
 
   // Games CRUD.
@@ -133,5 +161,40 @@ class DatabaseHelper {
     final db = await database;
     final rows = await db.query('profile', where: 'id = ?', whereArgs: [1], limit: 1);
     return rows.isNotEmpty ? rows.first : <String, dynamic>{};
+  }
+
+  // Accounts. Passwords are stored as a SHA-256 hex digest, never plain text.
+
+  String _hash(String password) =>
+      sha256.convert(utf8.encode(password)).toString();
+
+  Future<bool> usernameExists(String username) async {
+    final db = await database;
+    final rows = await db.query(
+      'users',
+      where: 'username = ?',
+      whereArgs: [username],
+      limit: 1,
+    );
+    return rows.isNotEmpty;
+  }
+
+  Future<void> registerUser(String username, String password) async {
+    final db = await database;
+    await db.insert('users', {
+      'username': username,
+      'password': _hash(password),
+    });
+  }
+
+  Future<bool> checkLogin(String username, String password) async {
+    final db = await database;
+    final rows = await db.query(
+      'users',
+      where: 'username = ? AND password = ?',
+      whereArgs: [username, _hash(password)],
+      limit: 1,
+    );
+    return rows.isNotEmpty;
   }
 }
