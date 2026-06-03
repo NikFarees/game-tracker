@@ -71,6 +71,9 @@ class _ProfilePageState extends State<ProfilePage> {
         _infoTile(Icons.badge_outlined, 'Name', name),
         _infoTile(Icons.person_outline, 'Username', widget.username),
         _infoTile(Icons.email_outlined, 'Email', (_user['email'] as String?) ?? '-'),
+        _infoTile(Icons.phone_outlined, 'Phone', (_user['phone'] as String?) ?? '-'),
+        _infoTile(Icons.school_outlined, 'Student ID', (_user['studentId'] as String?) ?? '-'),
+        _infoTile(Icons.menu_book_outlined, 'Course', (_user['course'] as String?) ?? '-'),
 
         const SizedBox(height: 28),
         ElevatedButton.icon(

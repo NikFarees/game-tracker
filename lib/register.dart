@@ -13,6 +13,9 @@ class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
   final _nameCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
+  final _phoneCtrl = TextEditingController();
+  final _studentIdCtrl = TextEditingController();
+  final _courseCtrl = TextEditingController();
   final _userCtrl = TextEditingController();
   final _passCtrl = TextEditingController();
   final _confirmCtrl = TextEditingController();
@@ -23,6 +26,9 @@ class _RegisterPageState extends State<RegisterPage> {
   void dispose() {
     _nameCtrl.dispose();
     _emailCtrl.dispose();
+    _phoneCtrl.dispose();
+    _studentIdCtrl.dispose();
+    _courseCtrl.dispose();
     _userCtrl.dispose();
     _passCtrl.dispose();
     _confirmCtrl.dispose();
@@ -49,6 +55,9 @@ class _RegisterPageState extends State<RegisterPage> {
       password: _passCtrl.text,
       name: _nameCtrl.text.trim(),
       email: _emailCtrl.text.trim(),
+      phone: _phoneCtrl.text.trim(),
+      studentId: _studentIdCtrl.text.trim(),
+      course: _courseCtrl.text.trim(),
     );
     if (!mounted) return;
 
@@ -108,6 +117,38 @@ class _RegisterPageState extends State<RegisterPage> {
                       }
                       return null;
                     },
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _phoneCtrl,
+                    keyboardType: TextInputType.phone,
+                    decoration: const InputDecoration(
+                      labelText: 'Phone',
+                      prefixIcon: Icon(Icons.phone_outlined),
+                    ),
+                    validator: (v) =>
+                        (v == null || v.trim().isEmpty) ? 'Enter your phone number' : null,
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _studentIdCtrl,
+                    decoration: const InputDecoration(
+                      labelText: 'Student ID',
+                      prefixIcon: Icon(Icons.badge_outlined),
+                    ),
+                    validator: (v) =>
+                        (v == null || v.trim().isEmpty) ? 'Enter your student ID' : null,
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _courseCtrl,
+                    textCapitalization: TextCapitalization.words,
+                    decoration: const InputDecoration(
+                      labelText: 'Course',
+                      prefixIcon: Icon(Icons.school_outlined),
+                    ),
+                    validator: (v) =>
+                        (v == null || v.trim().isEmpty) ? 'Enter your course' : null,
                   ),
                   const SizedBox(height: 16),
                   TextFormField(

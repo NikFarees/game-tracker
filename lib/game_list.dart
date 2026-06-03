@@ -4,8 +4,9 @@ import 'database_helper.dart';
 import 'form_page.dart';
 
 /// The scrollable list of game cards shared by the Home tab and the full
-/// "All Games" screen. Tap a card to edit, swipe left or long-press to delete.
-/// [onChanged] runs after an edit or delete so the parent can reload its data.
+/// "All Games" screen. Tap a card to edit, or tap the trash icon to delete
+/// (after a confirmation). [onChanged] runs after an edit or delete so the
+/// parent can reload its data.
 class GameList extends StatelessWidget {
   final List<Game> games;
   final Future<void> Function() onChanged;
@@ -33,7 +34,8 @@ class GameList extends StatelessWidget {
     return ok ?? false;
   }
 
-  Future<void> _delete(Game game) async {
+  Future<void> _confirmAndDelete(BuildContext context, Game game) async {
+    if (!await _confirmDelete(context, game)) return;
     await DatabaseHelper.instance.deleteGame(game.id!);
     await onChanged();
   }
@@ -58,34 +60,20 @@ class GameList extends StatelessWidget {
       itemCount: games.length,
       itemBuilder: (context, i) {
         final game = games[i];
-        return Dismissible(
-          key: ValueKey(game.id),
-          direction: DismissDirection.endToStart,
-          confirmDismiss: (_) => _confirmDelete(context, game),
-          onDismissed: (_) => _delete(game),
-          background: Container(
-            alignment: Alignment.centerRight,
-            padding: const EdgeInsets.only(right: 24),
-            decoration: BoxDecoration(
-              color: Colors.red.shade400,
-              borderRadius: BorderRadius.circular(16),
+        return Card(
+          child: ListTile(
+            leading: CircleAvatar(
+              backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
+              child: Icon(Icons.videogame_asset, color: Theme.of(context).colorScheme.primary),
             ),
-            child: const Icon(Icons.delete, color: Colors.white),
-          ),
-          child: Card(
-            child: ListTile(
-              leading: CircleAvatar(
-                backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
-                child: Icon(Icons.videogame_asset, color: Theme.of(context).colorScheme.primary),
-              ),
-              title: Text(game.title),
-              subtitle: Text('${game.platform} · ${game.status}'),
-              trailing: Text('${game.hours}h', style: TextStyle(color: Colors.grey[400])),
-              onTap: () => _edit(context, game),
-              onLongPress: () async {
-                if (await _confirmDelete(context, game)) _delete(game);
-              },
+            title: Text(game.title),
+            subtitle: Text('${game.platform} · ${game.status} · ${game.hours}h'),
+            trailing: IconButton(
+              icon: Icon(Icons.delete_outline, color: Colors.red.shade400),
+              tooltip: 'Delete',
+              onPressed: () => _confirmAndDelete(context, game),
             ),
+            onTap: () => _edit(context, game),
           ),
         );
       },

@@ -57,7 +57,7 @@ class DatabaseHelper {
     final path = join(await getDatabasesPath(), 'gamelog.db');
     return openDatabase(
       path,
-      version: 3,
+      version: 4,
       onCreate: _create,
       onUpgrade: _upgrade,
     );
@@ -84,7 +84,10 @@ class DatabaseHelper {
         username TEXT NOT NULL UNIQUE,
         password TEXT NOT NULL,
         name TEXT NOT NULL,
-        email TEXT NOT NULL
+        email TEXT NOT NULL,
+        phone TEXT NOT NULL,
+        studentId TEXT NOT NULL,
+        course TEXT NOT NULL
       )
     ''');
   }
@@ -94,7 +97,7 @@ class DatabaseHelper {
   // so rather than migrate row by row we just rebuild the users table while
   // leaving the games list untouched.
   Future<void> _upgrade(Database db, int oldVersion, int newVersion) async {
-    if (oldVersion < 3) {
+    if (oldVersion < 4) {
       await db.execute('DROP TABLE IF EXISTS profile');
       await db.execute('DROP TABLE IF EXISTS users');
       await _createUsers(db);
@@ -162,6 +165,9 @@ class DatabaseHelper {
     required String password,
     required String name,
     required String email,
+    required String phone,
+    required String studentId,
+    required String course,
   }) async {
     final db = await database;
     await db.insert('users', {
@@ -169,6 +175,9 @@ class DatabaseHelper {
       'password': _hash(password),
       'name': name,
       'email': email,
+      'phone': phone,
+      'studentId': studentId,
+      'course': course,
     });
   }
 
