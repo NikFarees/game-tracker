@@ -77,9 +77,12 @@ class _FormPageState extends State<FormPage> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Success'),
-        content: Text(_editing ? 'Game updated successfully!' : 'Game added successfully!'),
+        content: Text(_editing
+            ? 'Game updated successfully!'
+            : 'Game added successfully!'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('OK')),
+          TextButton(
+              onPressed: () => Navigator.pop(ctx), child: const Text('OK')),
         ],
       ),
     );
@@ -111,6 +114,7 @@ class _FormPageState extends State<FormPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            // FIND: game title field
             TextFormField(
               controller: _titleCtrl,
               decoration: const InputDecoration(
@@ -120,7 +124,10 @@ class _FormPageState extends State<FormPage> {
               validator: (v) =>
                   (v == null || v.trim().isEmpty) ? 'Enter a game title' : null,
             ),
+
             const SizedBox(height: 16),
+
+            // FIND: platform field
             DropdownButtonFormField<String>(
               initialValue: _platform,
               decoration: const InputDecoration(
@@ -133,7 +140,10 @@ class _FormPageState extends State<FormPage> {
               onChanged: (v) => setState(() => _platform = v),
               validator: (v) => v == null ? 'Select a platform' : null,
             ),
+
             const SizedBox(height: 16),
+
+            // FIND: hours played field
             TextFormField(
               controller: _hoursCtrl,
               keyboardType: TextInputType.number,
@@ -148,7 +158,10 @@ class _FormPageState extends State<FormPage> {
                 return null;
               },
             ),
+
             const SizedBox(height: 16),
+
+            // FIND: status field
             DropdownButtonFormField<String>(
               initialValue: _status,
               decoration: const InputDecoration(
@@ -161,7 +174,10 @@ class _FormPageState extends State<FormPage> {
               onChanged: (v) => setState(() => _status = v),
               validator: (v) => v == null ? 'Select a status' : null,
             ),
+
             const SizedBox(height: 28),
+
+            // FIND: add game button
             ElevatedButton.icon(
               onPressed: _save,
               icon: Icon(_editing ? Icons.save : Icons.add),

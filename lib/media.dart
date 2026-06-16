@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class MediaPage extends StatelessWidget {
   const MediaPage({super.key});
 
+  // FIND: media data list
   static const _items = [
     _NewsItem(Icons.emoji_events_outlined, 'Top 10 RPGs of 2025',
         'Our picks for the year, ranked.'),
@@ -26,6 +27,7 @@ class MediaPage extends StatelessWidget {
       itemCount: _items.length,
       itemBuilder: (context, i) {
         final item = _items[i];
+        // FIND: media item card
         return Card(
           child: ListTile(
             leading: Icon(item.icon, color: accent),

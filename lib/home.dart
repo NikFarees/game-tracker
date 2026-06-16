@@ -67,17 +67,25 @@ class _HomePageState extends State<HomePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // FIND: welcome message
           Text(
             'Welcome back, ${widget.username}!',
             style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           ),
+
           const SizedBox(height: 4),
-          Text('Here is your library at a glance.', style: TextStyle(color: Colors.grey[500])),
+
+          // FIND: subheading
+          Text('Here is your library at a glance.',
+              style: TextStyle(color: Colors.grey[500])),
+
           const SizedBox(height: 16),
 
           Row(
+            // FIND: total games and now playing cards
             children: [
-              _statCard('Total Games', '$_total', Icons.videogame_asset_outlined),
+              _statCard(
+                  'Total Games', '$_total', Icons.videogame_asset_outlined),
               const SizedBox(width: 12),
               _statCard('Now Playing', '$_playing', Icons.play_circle_outline),
             ],
@@ -86,6 +94,7 @@ class _HomePageState extends State<HomePage> {
 
           Row(
             children: [
+              // FIND: add game button
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: () => _openForm(),
@@ -93,7 +102,10 @@ class _HomePageState extends State<HomePage> {
                   label: const Text('Add Game'),
                 ),
               ),
+
               const SizedBox(width: 12),
+
+              // FIND: view all games button
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: _openAllGames,
@@ -103,9 +115,12 @@ class _HomePageState extends State<HomePage> {
               ),
             ],
           ),
+
           const SizedBox(height: 20),
 
-          const Text('Recent Games', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          // FIND: recent games list
+          const Text('Recent Games',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
 
           Expanded(
@@ -130,7 +145,9 @@ class _HomePageState extends State<HomePage> {
             children: [
               Icon(icon, color: accent),
               const SizedBox(height: 10),
-              Text(value, style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
+              Text(value,
+                  style: const TextStyle(
+                      fontSize: 26, fontWeight: FontWeight.bold)),
               const SizedBox(height: 2),
               Text(label, style: TextStyle(color: Colors.grey[400])),
             ],

@@ -4,6 +4,7 @@ import 'package:crypto/crypto.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
+// FIND: game model class
 class Game {
   final int? id;
   final String title;
@@ -11,6 +12,7 @@ class Game {
   final int hours;
   final String status;
 
+  // FIND: game constructor
   Game({
     this.id,
     required this.title,
@@ -39,6 +41,7 @@ class Game {
       );
 }
 
+// FIND database helper class — all database operations go through here. It uses the singleton pattern to ensure only one connection is open at a time.
 class DatabaseHelper {
   DatabaseHelper._();
   static final DatabaseHelper instance = DatabaseHelper._();
@@ -61,6 +64,7 @@ class DatabaseHelper {
   }
 
   Future<void> _create(Database db, int version) async {
+    // FIND: games table
     await db.execute('''
       CREATE TABLE games (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -75,6 +79,7 @@ class DatabaseHelper {
   }
 
   Future<void> _createUsers(Database db) async {
+    // FIND: users table
     await db.execute('''
       CREATE TABLE users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -97,33 +102,40 @@ class DatabaseHelper {
     }
   }
 
+  // FIND: insertGame saves a new game row and returns the auto-generated id of that new row.
   Future<int> insertGame(Game game) async {
     final db = await database;
     return db.insert('games', game.toMap());
   }
 
+  // FIND: getGames returns all games
   Future<List<Game>> getGames() async {
     final db = await database;
     final rows = await db.query('games', orderBy: 'id DESC');
     return rows.map(Game.fromMap).toList();
   }
 
+  // FIND: updateGame overwrites the game
   Future<int> updateGame(Game game) async {
     final db = await database;
-    return db.update('games', game.toMap(), where: 'id = ?', whereArgs: [game.id]);
+    return db
+        .update('games', game.toMap(), where: 'id = ?', whereArgs: [game.id]);
   }
 
+  // FIND: deleteGame removes the game
   Future<int> deleteGame(int id) async {
     final db = await database;
     return db.delete('games', where: 'id = ?', whereArgs: [id]);
   }
 
+  // FIND: getTotalCount counts all game
   Future<int> getTotalCount() async {
     final db = await database;
     final res = await db.rawQuery('SELECT COUNT(*) AS c FROM games');
     return Sqflite.firstIntValue(res) ?? 0;
   }
 
+  // FIND: getNowPlayingCount counts only game where status = 'Playing'
   Future<int> getNowPlayingCount() async {
     final db = await database;
     final res = await db.rawQuery(
@@ -133,9 +145,11 @@ class DatabaseHelper {
     return Sqflite.firstIntValue(res) ?? 0;
   }
 
+  // FIND: _hash converts a plain-text password into a SHA-256 hex string.
   String _hash(String password) =>
       sha256.convert(utf8.encode(password)).toString();
 
+  // FIND: usernameExists is called during registration to block duplicate usernames before inserting.
   Future<bool> usernameExists(String username) async {
     final db = await database;
     final rows = await db.query(
@@ -147,6 +161,7 @@ class DatabaseHelper {
     return rows.isNotEmpty;
   }
 
+  // FIND: registerUser inserts a new account.
   Future<void> registerUser({
     required String username,
     required String password,
@@ -168,6 +183,7 @@ class DatabaseHelper {
     });
   }
 
+  // FIND: getUser return user data
   Future<Map<String, dynamic>> getUser(String username) async {
     final db = await database;
     final rows = await db.query(
@@ -179,6 +195,7 @@ class DatabaseHelper {
     return rows.isNotEmpty ? rows.first : <String, dynamic>{};
   }
 
+  // FIND: checkLogin hashes the entered password then looks for a row where BOTH username AND hash match.
   Future<bool> checkLogin(String username, String password) async {
     final db = await database;
     final rows = await db.query(

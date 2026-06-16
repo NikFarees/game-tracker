@@ -66,7 +66,8 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   void _showSnack(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -84,13 +85,20 @@ class _RegisterPageState extends State<RegisterPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  // FIND: app logo
                   Icon(Icons.sports_esports, size: 72, color: accent),
+
                   const SizedBox(height: 12),
+
+                  // FIND: join gameplog
                   const Text(
                     'Join GameLog',
                     style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                   ),
+
                   const SizedBox(height: 36),
+
+                  // FIND: name field
                   TextFormField(
                     controller: _nameCtrl,
                     textCapitalization: TextCapitalization.words,
@@ -98,10 +106,14 @@ class _RegisterPageState extends State<RegisterPage> {
                       labelText: 'Name',
                       prefixIcon: Icon(Icons.badge_outlined),
                     ),
-                    validator: (v) =>
-                        (v == null || v.trim().isEmpty) ? 'Enter your name' : null,
+                    validator: (v) => (v == null || v.trim().isEmpty)
+                        ? 'Enter your name'
+                        : null,
                   ),
+
                   const SizedBox(height: 16),
+
+                  // FIND: email field
                   TextFormField(
                     controller: _emailCtrl,
                     keyboardType: TextInputType.emailAddress,
@@ -118,7 +130,10 @@ class _RegisterPageState extends State<RegisterPage> {
                       return null;
                     },
                   ),
+
                   const SizedBox(height: 16),
+
+                  // FIND: phone field
                   TextFormField(
                     controller: _phoneCtrl,
                     keyboardType: TextInputType.phone,
@@ -126,20 +141,28 @@ class _RegisterPageState extends State<RegisterPage> {
                       labelText: 'Phone',
                       prefixIcon: Icon(Icons.phone_outlined),
                     ),
-                    validator: (v) =>
-                        (v == null || v.trim().isEmpty) ? 'Enter your phone number' : null,
+                    validator: (v) => (v == null || v.trim().isEmpty)
+                        ? 'Enter your phone number'
+                        : null,
                   ),
+
                   const SizedBox(height: 16),
+
+                  // FIND: student ID field
                   TextFormField(
                     controller: _studentIdCtrl,
                     decoration: const InputDecoration(
                       labelText: 'Student ID',
                       prefixIcon: Icon(Icons.badge_outlined),
                     ),
-                    validator: (v) =>
-                        (v == null || v.trim().isEmpty) ? 'Enter your student ID' : null,
+                    validator: (v) => (v == null || v.trim().isEmpty)
+                        ? 'Enter your student ID'
+                        : null,
                   ),
+
                   const SizedBox(height: 16),
+
+                  // FIND: course field
                   TextFormField(
                     controller: _courseCtrl,
                     textCapitalization: TextCapitalization.words,
@@ -147,20 +170,28 @@ class _RegisterPageState extends State<RegisterPage> {
                       labelText: 'Course',
                       prefixIcon: Icon(Icons.school_outlined),
                     ),
-                    validator: (v) =>
-                        (v == null || v.trim().isEmpty) ? 'Enter your course' : null,
+                    validator: (v) => (v == null || v.trim().isEmpty)
+                        ? 'Enter your course'
+                        : null,
                   ),
+
                   const SizedBox(height: 16),
+
+                  // FIND: username field
                   TextFormField(
                     controller: _userCtrl,
                     decoration: const InputDecoration(
                       labelText: 'Username',
                       prefixIcon: Icon(Icons.person_outline),
                     ),
-                    validator: (v) =>
-                        (v == null || v.trim().isEmpty) ? 'Choose a username' : null,
+                    validator: (v) => (v == null || v.trim().isEmpty)
+                        ? 'Choose a username'
+                        : null,
                   ),
+
                   const SizedBox(height: 16),
+
+                  // FIND: password field
                   TextFormField(
                     controller: _passCtrl,
                     obscureText: true,
@@ -171,7 +202,10 @@ class _RegisterPageState extends State<RegisterPage> {
                     validator: (v) =>
                         (v == null || v.isEmpty) ? 'Choose a password' : null,
                   ),
+
                   const SizedBox(height: 16),
+
+                  // FIND: confirm password field
                   TextFormField(
                     controller: _confirmCtrl,
                     obscureText: true,
@@ -182,7 +216,10 @@ class _RegisterPageState extends State<RegisterPage> {
                     validator: (v) =>
                         v != _passCtrl.text ? 'Passwords do not match' : null,
                   ),
+
                   const SizedBox(height: 28),
+
+                  // FIND: create account button
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
