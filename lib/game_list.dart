@@ -22,8 +22,12 @@ class GameList extends StatelessWidget {
         title: const Text('Delete game?'),
         content: Text('Remove "${game.title}" from your library?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Delete')),
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('Cancel')),
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: const Text('Delete')),
         ],
       ),
     );
@@ -58,17 +62,29 @@ class GameList extends StatelessWidget {
         final game = games[i];
         return Card(
           child: ListTile(
+            // FIND: game icon
             leading: CircleAvatar(
-              backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
-              child: Icon(Icons.videogame_asset, color: Theme.of(context).colorScheme.primary),
+              backgroundColor:
+                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
+              child: Icon(Icons.videogame_asset,
+                  color: Theme.of(context).colorScheme.primary),
             ),
+
+            // FIND: game title
             title: Text(game.title),
-            subtitle: Text('${game.platform} · ${game.status} · ${game.hours}h'),
+
+            // FIND: game details (platform, status, hours played)
+            subtitle:
+                Text('${game.platform} · ${game.status} · ${game.hours}h'),
+
+            // FIND: delete button
             trailing: IconButton(
               icon: Icon(Icons.delete_outline, color: Colors.red.shade400),
               tooltip: 'Delete',
               onPressed: () => _confirmAndDelete(context, game),
             ),
+
+            // FIND: edit game
             onTap: () => _edit(context, game),
           ),
         );
