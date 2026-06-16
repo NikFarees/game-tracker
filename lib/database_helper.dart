@@ -102,7 +102,7 @@ class DatabaseHelper {
     }
   }
 
-  // FIND: insertGame saves a new game row and returns the auto-generated id of that new row.
+  // FIND: insertGame add a new game
   Future<int> insertGame(Game game) async {
     final db = await database;
     return db.insert('games', game.toMap());

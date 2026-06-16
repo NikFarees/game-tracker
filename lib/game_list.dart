@@ -15,6 +15,7 @@ class GameList extends StatelessWidget {
     this.emptyMessage = 'No games yet. Tap "Add Game" to start.',
   });
 
+  // FIND : confirmation deletion
   Future<bool> _confirmDelete(BuildContext context, Game game) async {
     final ok = await showDialog<bool>(
       context: context,
